@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#ebebeb;
+  --white:#f8f8f7;
+  --black:#111111;
+  --gray:#999;
+  --lgray:#ccc;
+  --tag:#ffffffd0;
+}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--black);
+  overflow:hidden;
+  cursor:none;
+  user-select:none;
+}
+
+/* ── CURSOR ── */
+#cur{
+  width:10px;height:10px;
+  background:var(--black);
+  border-radius:50%;
+  position:fixed;pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .2s,height .2s,background .2s;
+}
+#cur2{
+  width:34px;height:34px;
+  border:1.5px solid #333;
+  border-radius:50%;
+  position:fixed;pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:transform .4s cubic-bezier(.16,1,.3,1), width .25s, height .25s, opacity .25s;
+}
+
+/* ── PAGES ── */
+.page{
+  position:fixed;inset:0;
+  opacity:0;pointer-events:none;
+  transition:opacity .6s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+.page.active{
+  opacity:1;pointer-events:all;
+}
+
+/* ── NAV ── */
+nav{
+  position:absolute;top:0;left:0;right:0;
+  z-index:100;
+  display:flex;align-items:center;
+  padding:20px 44px;
+  background:rgba(235,235,235,0.82);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(0,0,0,.07);
+}
+.nav-logo{
+  width:40px;height:40px;
+  border:2px solid var(--black);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;letter-spacing:-.5px;
+  margin-right:36px;flex-shrink:0;
+  transition:background .3s,color .3s;
+}
+.nav-logo:hover{background:var(--black);color:#fff;cursor:none;}
+.nav-links{display:flex;gap:28px;align-items:center;}
+.nav-links a{
+  font-size:14px;font-weight:400;color:var(--black);
+  text-decoration:none;letter-spacing:.01em;
+  position:relative;padding-bottom:2px;
+  transition:color .25s;cursor:none;
+}
+.nav-links a::after{
+  content:'';
+  position:absolute;bottom:0;left:0;width:0;height:1.5px;
+  background:var(--black);
+  transition:width .3s cubic-bezier(.4,0,.2,1);
+}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%;}
+.nav-links a.active{font-weight:500;}
+
+/* ── SLIDE INDICATOR ── */
+.slide-dots{
+  position:absolute;right:44px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  z-index:50;
+}
+.slide-num{font-size:11px;color:var(--gray);letter-spacing:.05em;font-weight:500;}
+.dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--lgray);
+  transition:background .3s,transform .3s;
+  cursor:none;
+}
+.dot.on{
+  background:var(--black);
+  border:2px solid var(--black);
+  background:transparent;
+  width:10px;height:10px;
+  transform:scale(1);
+}
+
+/* ── FLOATING TAG ── */
+.ftag{
+  position:absolute;
+  background:var(--tag);
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.7);
+  border-radius:6px;
+  padding:7px 14px;
+  font-size:12px;font-weight:500;
+  color:var(--black);
+  display:flex;align-items:center;gap:7px;
+  box-shadow:0 4px 24px rgba(0,0,0,.08);
+  animation:tagFloat 3s ease-in-out infinite;
+  z-index:30;
+}
+.ftag::before{
+  content:'';
+  width:7px;height:7px;border-radius:50%;
+  background:var(--black);flex-shrink:0;
+}
+@keyframes tagFloat{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
+}
+
+/* ── SCROLL HINT ── */
+.scroll-hint{
+  position:absolute;bottom:30px;left:44px;
+  display:flex;align-items:center;gap:10px;
+  font-size:12px;color:var(--gray);
+  z-index:50;
+}
+.scroll-icon{
+  width:22px;height:34px;
+  border:1.5px solid var(--lgray);
+  border-radius:12px;
+  position:relative;overflow:hidden;
+}
+.scroll-icon::after{
+  content:'';
+  width:3px;height:7px;background:var(--black);
+  border-radius:2px;
+  position:absolute;top:6px;left:50%;transform:translateX(-50%);
+  animation:scrollDown 1.6s ease-in-out infinite;
+}
+@keyframes scrollDown{
+  0%{opacity:1;top:6px;}
+  100%{opacity:0;top:22px;}
+}
+
+/* ── WATERMARK TEXT ── */
+.wm{
+  position:absolute;right:-20px;top:50%;transform:translateY(-50%);
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(100px,14vw,190px);
+  color:rgba(0,0,0,.06);
+  letter-spacing:.02em;
+  pointer-events:none;z-index:1;
+  white-space:nowrap;
+}
+
+/* ═══════════════════════════════
+   PAGE 1 — HOME
+═══════════════════════════════ */
+#home{background:var(--bg);}
+
+.hero-img{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  z-index:5;
+}
+.hero-img img{
+  height:100vh;
+  max-width:65vw;
+  object-fit:cover;
+  object-position:top center;
+  filter:grayscale(100%) contrast(1.05);
+  transition:filter .5s;
+}
+
+.hero-content{
+  position:absolute;
+  bottom:120px;left:44px;
+  z-index:20;
+}
+.hero-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(72px,9vw,130px);
+  line-height:.9;
+  letter-spacing:-.02em;
+  color:var(--black);
+  overflow:hidden;
+}
+.hero-title span{
+  display:block;
+  transform:translateY(110%);
+  animation:slideUp .8s cubic-bezier(.16,1,.3,1) .2s forwards;
+}
+@keyframes slideUp{to{transform:translateY(0);}}
+
+.hero-sub{
+  font-size:13px;font-weight:300;color:var(--gray);
+  margin-top:6px;
+  opacity:0;animation:fadeIn .6s ease .9s forwards;
+}
+.hero-power{
+  margin-top:32px;
+  opacity:0;animation:fadeIn .6s ease 1.1s forwards;
+}
+.hero-power h4{font-size:13px;font-weight:500;margin-bottom:5px;}
+.hero-power p{font-size:12px;font-weight:300;color:var(--gray);line-height:1.7;max-width:220px;}
+
+@keyframes fadeIn{to{opacity:1;}}
+
+/* small icon bottom-right */
+.char-icon{
+  position:absolute;bottom:30px;right:44px;
+  width:44px;height:44px;
+  border-radius:50%;overflow:hidden;
+  z-index:50;border:2px solid rgba(0,0,0,.15);
+  opacity:0;animation:fadeIn .5s ease 1.5s forwards;
+}
+.char-icon img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%);}
+
+/* ═══════════════════════════════
+   PAGE 2 — MOVIE / WORK
+═══════════════════════════════ */
+#movie{background:var(--bg);}
+.movie-grid{
+  position:absolute;inset:0;
+  padding:100px 44px 44px;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:16px;
+  z-index:10;
+}
+.movie-card{
+  background:#ddd;
+  border-radius:12px;overflow:hidden;
+  position:relative;cursor:none;
+  transition:transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s;
+}
+.movie-card:hover{transform:scale(1.02);box-shadow:0 20px 60px rgba(0,0,0,.15);}
+.movie-card:first-child{grid-column:span 2;grid-row:span 1;}
+.movie-card img{
+  width:100%;height:100%;object-fit:cover;
+  filter:grayscale(100%) contrast(1.05);
+  transition:filter .4s,transform .5s;
+}
+.movie-card:hover img{filter:grayscale(80%);transform:scale(1.04);}
+.movie-card-info{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:20px;
+  background:linear-gradient(transparent,rgba(0,0,0,.6));
+  color:#fff;
+}
+.movie-card-info h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.03em;}
+.movie-card-info p{font-size:11px;opacity:.7;margin-top:2px;}
+.movie-card-tag{
+  position:absolute;top:14px;right:14px;
+  background:rgba(255,255,255,.9);
+  color:var(--black);font-size:10px;font-weight:600;
+  padding:4px 10px;border-radius:20px;letter-spacing:.05em;
+}
+
+/* ═══════════════════════════════
+   PAGE 3 — ABOUT
+═══════════════════════════════ */
+#about{background:var(--bg);}
+.about-inner{
+  position:absolute;inset:0;
+  padding:100px 44px 44px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  align-items:center;
+  z-index:10;
+}
+.about-img-wrap{
+  position:relative;height:70vh;
+  border-radius:16px;overflow:hidden;
+}
+.about-img-wrap img{
+  width:100%;height:100%;
+  object-fit:cover;
+  filter:grayscale(100%);
+}
+.about-badge{
+  position:absolute;top:24px;right:-24px;
+  width:100px;height:100px;
+  background:var(--black);color:#fff;
+  border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  animation:rotateBadge 8s linear infinite;
+}
+@keyframes rotateBadge{to{transform:rotate(360deg);}}
+.about-badge span:first-child{font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;}
+.about-badge span:last-child{font-size:9px;letter-spacing:.08em;margin-top:2px;}
+
+.about-text .label{font-size:11px;letter-spacing:.12em;color:var(--gray);text-transform:uppercase;margin-bottom:16px;}
+.about-text h2{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(42px,5vw,72px);
+  line-height:.95;letter-spacing:-.01em;
+  margin-bottom:24px;
+}
+.about-text p{font-size:14px;font-weight:300;color:#444;line-height:1.8;margin-bottom:16px;}
+.about-stats{
+  display:flex;gap:32px;margin-top:32px;
+}
+.stat h3{font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:1;}
+.stat p{font-size:11px;color:var(--gray);margin-top:3px;}
+.about-skills{margin-top:28px;display:flex;flex-wrap:wrap;gap:8px;}
+.skill-pill{
+  padding:6px 14px;border:1.5px solid rgba(0,0,0,.15);
+  border-radius:20px;font-size:11px;font-weight:500;
+  transition:background .25s,color .25s,border-color .25s;cursor:none;
+}
+.skill-pill:hover{background:var(--black);color:#fff;border-color:var(--black);}
+
+/* ═══════════════════════════════
+   PAGE 4 — BLOG
+═══════════════════════════════ */
+#blog{background:var(--bg);}
+.blog-inner{
+  position:absolute;inset:0;
+  padding:100px 44px 44px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+  z-index:10;
+  overflow-y:auto;
+}
+.blog-inner::-webkit-scrollbar{width:4px;}
+.blog-inner::-webkit-scrollbar-thumb{background:var(--lgray);border-radius:2px;}
+
+.blog-card{
+  background:rgba(255,255,255,.55);
+  backdrop-filter:blur(8px);
+  border-radius:14px;
+  padding:32px;
+  border:1px solid rgba(255,255,255,.8);
+  position:relative;overflow:hidden;cursor:none;
+  transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s;
+}
+.blog-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.09);}
+.blog-card:first-child{grid-column:span 2;}
+.blog-date{font-size:11px;color:var(--gray);letter-spacing:.06em;margin-bottom:12px;}
+.blog-card h3{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(22px,2.5vw,34px);
+  letter-spacing:.02em;line-height:1.05;
+  margin-bottom:12px;
+}
+.blog-card p{font-size:13px;font-weight:300;color:#555;line-height:1.7;}
+.blog-tag{
+  display:inline-block;
+  margin-top:16px;
+  padding:4px 12px;
+  background:var(--black);color:#fff;
+  border-radius:20px;font-size:10px;letter-spacing:.07em;font-weight:500;
+}
+.blog-card-num{
+  position:absolute;bottom:20px;right:24px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:60px;color:rgba(0,0,0,.05);
+  line-height:1;pointer-events:none;
+}
+
+/* ── SLIDE TRANSITION ── */
+.page-enter{animation:pageIn .55s cubic-bezier(.16,1,.3,1) forwards;}
+.page-exit{animation:pageOut .4s cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes pageIn{
+  from{opacity:0;transform:translateY(18px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes pageOut{
+  from{opacity:1;transform:translateY(0);}
+  to{opacity:0;transform:translateY(-12px);}
+}
+
+/* ── NOISE OVERLAY ── */
+body::after{
+  content:'';
+  position:fixed;inset:0;pointer-events:none;z-index:9000;
+  opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:180px;
+}
+
+.book-btn{
+display:inline-block;
+margin-top:18px;
+padding:10px 18px;
+background:#111;
+color:#fff;
+text-decoration:none;
+border-radius:30px;
+font-size:12px;
+transition:.3s;
+}
+
+.book-btn:hover{
+transform:translateY(-3px);
+}
+
+/* ═══════════════════════════════
+   BOOK READER BUTTON
+═══════════════════════════════ */
+
+.book-read-btn {
+  --stone-50: #fafaf9;
+  --stone-800: #292524;
+  --yellow-400: #facc15;
+
+  font-size: 0.9rem;
+  cursor: pointer;
+  position: relative;
+  font-family: 'Bebas Neue', sans-serif;
+  font-weight: bold;
+  line-height: 1;
+  padding: 1px;
+  transform: translate(-4px, -4px);
+  outline: 2px solid transparent;
+  outline-offset: 5px;
+  border-radius: 9999px;
+  background-color: var(--stone-800);
+  color: var(--stone-800);
+  border: none;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+  text-align: center;
+  box-shadow:
+    0.5px 0.5px 0 0 var(--stone-800),
+    1px 1px 0 0 var(--stone-800),
+    1.5px 1.5px 0 0 var(--stone-800),
+    2px 2px 0 0 var(--stone-800),
+    2.5px 2.5px 0 0 var(--stone-800),
+    3px 3px 0 0 var(--stone-800),
+    0 0 0 2px var(--stone-50),
+    0.5px 0.5px 0 2px var(--stone-50),
+    1px 1px 0 2px var(--stone-50),
+    1.5px 1.5px 0 2px var(--stone-50),
+    2px 2px 0 2px var(--stone-50),
+    2.5px 2.5px 0 2px var(--stone-50),
+    3px 3px 0 2px var(--stone-50),
+    3.5px 3.5px 0 2px var(--stone-50),
+    4px 4px 0 2px var(--stone-50);
+}
+
+.book-read-btn:hover {
+  transform: translate(0, 0);
+  box-shadow: 0 0 0 2px var(--stone-50);
+}
+
+.book-read-btn:active,
+.book-read-btn:focus-visible {
+  outline-color: #facc15;
+}
+
+.book-read-btn:focus-visible {
+  outline-style: dashed;
+}
+
+.book-read-btn > div {
+  position: relative;
+  pointer-events: none;
+  background-color: var(--yellow-400);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
+}
+
+.book-read-btn > div::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  opacity: 0.5;
+  background-image: radial-gradient(
+      rgb(255 255 255 / 80%) 20%,
+      transparent 20%
+    ),
+    radial-gradient(rgb(255 255 255 / 100%) 20%, transparent 20%);
+  background-position:
+    0 0,
+    4px 4px;
+  background-size: 8px 8px;
+  mix-blend-mode: hard-light;
+  animation: dots 0.5s infinite linear;
+}
+
+.book-read-btn > div > span {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1rem;
+  gap: 0.25rem;
+  filter: drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.25));
+  color: #111;
+}
+
+.book-read-btn > div > span:active {
+  transform: translateY(2px);
+}
+
+@keyframes dots {
+  0% {
+    background-position:
+      0 0,
+      4px 4px;
+  }
+  100% {
+    background-position:
+      8px 0,
+      12px 4px;
+  }
+}
+
+#musicBtn{
+margin-left:10px;
+border:none;
+padding:8px 16px;
+background:var(--black);
+color:#fff;
+border-radius:20px;
+font-size:12px;
+font-weight:500;
+cursor:none;
+transition:background .25s;
+}
+
+#musicBtn:hover{
+background:rgba(0,0,0,.8);
+}
+
+/* Responsive */
+@media(max-width:768px){
+  nav{padding:16px 20px;}
+  .movie-grid{grid-template-columns:1fr 1fr;padding:90px 20px 20px;}
+  .movie-card:first-child{grid-column:span 2;}
+  .about-inner{grid-template-columns:1fr;padding:90px 20px 20px;gap:24px;}
+  .about-img-wrap{height:40vh;}
+  .blog-inner{grid-template-columns:1fr;padding:90px 20px 20px;}
+  .blog-card:first-child{grid-column:span 1;}
+  .hero-content{left:20px;bottom:100px;}
+  .slide-dots{right:16px;}
+  .scroll-hint{left:20px;}
+  .wm{font-size:90px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="nav-logo" onclick="goTo('home')">DC</div>
+  <div class="nav-links">
+    <a href="#" class="active" id="nav-home" onclick="goTo('home');return false;">Home</a>
+    <a href="#" id="nav-movie" onclick="goTo('movie');return false;">Movie</a>
+    <a href="#" id="nav-about" onclick="goTo('about');return false;">About</a>
+    <a href="#" id="nav-books" onclick="goTo('books');return false;">Books</a>
+    <a href="#" id="nav-blog" onclick="goTo('blog');return false;">Blog</a>
+    <button class="theme-btn" id="musicBtn">Music</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════
+  PAGE 1 — HOME
+═══════════════════════ -->
+<div class="page active" id="home">
+
+  <!-- Watermark -->
+  <div class="wm">DC</div>
+
+  <!-- Hero Portrait -->
+  <div class="hero-img">
+    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80&fit=crop&crop=face" alt="hero" onerror="this.src='https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80&fit=crop&crop=face'">
+  </div>
+
+  <!-- Floating Tags -->
+  <div class="ftag" style="top:28%;right:38%;animation-delay:0s;">Intelligence</div>
+  <div class="ftag" style="top:60%;right:20%;animation-delay:1.2s;">Complete<br>Unpredictability</div>
+
+  <!-- Hero Text -->
+  <div class="hero-content">
+    <div class="hero-title"><span>Joker</span></div>
+    <div class="hero-sub">Published By DC</div>
+    <div class="hero-power">
+      <h4>Power</h4>
+      <p>Complete Unpredictability, Chaos Agent,<br>Customized Weapons, Wields Toxin<br>Which Causes Victims To Die Laughing</p>
+    </div>
+  </div>
+
+  <!-- Slide Dots -->
+  <div class="slide-dots">
+    <div class="slide-num">01</div>
+    <div class="dot on" onclick="goTo('home')"></div>
+    <div class="dot" onclick="goTo('movie')"></div>
+    <div class="dot" onclick="goTo('about')"></div>
+    <div class="dot" onclick="goTo('books')"></div>
+    <div class="dot" onclick="goTo('blog')"></div>
+    <div class="slide-num">05</div>
+  </div>
+
+  <!-- Scroll Hint -->
+  <div class="scroll-hint">
+    <div class="scroll-icon"></div>
+    Scroll Mouse
+  </div>
+
+  <!-- Character Mini Icon -->
+  <div class="char-icon">
+    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80&fit=crop&crop=face" alt="">
+  </div>
+
+</div>
+
+<!-- ═══════════════════════
+  PAGE 2 — MOVIE
+═══════════════════════ -->
+<div class="page" id="movie">
+  <div class="wm">MOVIE</div>
+  <div class="movie-grid">
+
+    <div class="movie-card">
+      <img src="https://images.unsplash.com/photo-1574267432553-4b4628081c31?w=900&q=80&fit=crop" alt="Joker 2019">
+      <div class="movie-card-info">
+        <h3>Joker — 2019</h3>
+        <p>Todd Phillips · Warner Bros.</p>
+      </div>
+      <div class="movie-card-tag">★ 8.4</div>
+    </div>
+
+    <div class="movie-card">
+      <img src="https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=600&q=80&fit=crop" alt="Batman">
+      <div class="movie-card-info">
+        <h3>The Dark Knight</h3>
+        <p>Christopher Nolan · 2008</p>
+      </div>
+      <div class="movie-card-tag">★ 9.0</div>
+    </div>
+
+    <div class="movie-card">
+      <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=600&q=80&fit=crop" alt="Suicide Squad">
+      <div class="movie-card-info">
+        <h3>Suicide Squad</h3>
+        <p>David Ayer · 2016</p>
+      </div>
+      <div class="movie-card-tag">★ 5.9</div>
+    </div>
+
+    <div class="movie-card">
+      <img src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=600&q=80&fit=crop" alt="Joker 2">
+      <div class="movie-card-info">
+        <h3>Folie à Deux</h3>
+        <p>Todd Phillips · 2024</p>
+      </div>
+      <div class="movie-card-tag">★ 4.5</div>
+    </div>
+
+    <div class="movie-card">
+      <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&q=80&fit=crop" alt="DC Universe">
+      <div class="movie-card-info">
+        <h3>DC Universe</h3>
+        <p>Complete Collection</p>
+      </div>
+      <div class="movie-card-tag">DC+</div>
+    </div>
+
+  </div>
+
+  <div class="slide-dots">
+    <div class="slide-num">02</div>
+    <div class="dot" onclick="goTo('home')"></div>
+    <div class="dot on" onclick="goTo('movie')"></div>
+    <div class="dot" onclick="goTo('about')"></div>
+    <div class="dot" onclick="goTo('books')"></div>
+    <div class="dot" onclick="goTo('blog')"></div>
+    <div class="slide-num">05</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════
+  PAGE 3 — ABOUT
+═══════════════════════ -->
+<div class="page" id="about">
+  <div class="wm">ABOUT</div>
+  <div class="about-inner">
+
+    <div class="about-img-wrap">
+      <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=700&q=80&fit=crop&crop=top" alt="About">
+      <div class="about-badge">
+        <span>DC</span>
+        <span>COMICS</span>
+      </div>
+    </div>
+
+    <div class="about-text">
+      <div class="label">Character Profile</div>
+      <h2>The Man<br>Behind<br>The Mask</h2>
+      <p>Arthur Fleck, known as the Joker, is a failed comedian who descends into madness after society repeatedly rejects and mistreats him. He becomes Gotham's most feared villain.</p>
+      <p>His unpredictable nature and genius-level intellect make him the perfect chaotic counterpart to Batman's order.</p>
+      <div class="about-stats">
+        <div class="stat"><h3>80+</h3><p>Comic Arcs</p></div>
+        <div class="stat"><h3>12</h3><p>Film Roles</p></div>
+        <div class="stat"><h3>#1</h3><p>DC Villain</p></div>
+      </div>
+      <div class="about-skills">
+        <div class="skill-pill">Intelligence</div>
+        <div class="skill-pill">Chaos Theory</div>
+        <div class="skill-pill">Manipulation</div>
+        <div class="skill-pill">Combat</div>
+        <div class="skill-pill">Weapons Expert</div>
+        <div class="skill-pill">Psychology</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide-dots">
+    <div class="slide-num">03</div>
+    <div class="dot" onclick="goTo('home')"></div>
+    <div class="dot" onclick="goTo('movie')"></div>
+    <div class="dot on" onclick="goTo('about')"></div>
+    <div class="dot" onclick="goTo('books')"></div>
+    <div class="dot" onclick="goTo('blog')"></div>
+    <div class="slide-num">05</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════
+  PAGE 4 — BOOKS
+═══════════════════════ -->
+<div class="page" id="books">
+
+<div class="wm">
+WRITER
+</div>
+
+<div class="books-container">
+
+<!-- Books Library List -->
+<div class="books-library">
+
+<div class="book-item" onclick="openBook('book.pdf', 'My Portfolio Story', 'Rishav Builder')">
+<h4>My Portfolio Story</h4>
+<p class="book-author">by Rishav Builder</p>
+<p>A creative journey through projects, ideas and digital experiences.</p>
+<button class="book-read-btn"><div><span>Read Book</span></div></button>
+</div>
+
+<div class="book-item" onclick="openBook('story.pdf', 'World Building', 'Creative Tales')">
+<h4>World Building</h4>
+<p class="book-author">Creative Tales</p>
+<p>Exploring imaginative universes and character development concepts.</p>
+<button class="book-read-btn"><div><span>Read Book</span></div></button>
+</div>
+
+<div class="book-item" onclick="openBook('guide.pdf', 'UI Design Guide', 'Rishav Builder')">
+<h4>UI Design Guide</h4>
+<p class="book-author">by Rishav Builder</p>
+<p>Modern design principles and cinematic web experiences.</p>
+<button class="book-read-btn"><div><span>Read Book</span></div></button>
+</div>
+
+<div class="book-item" onclick="openBook('code.pdf', 'Creative Coding', 'Developer Notes')">
+<h4>Creative Coding</h4>
+<p class="book-author">Developer Notes</p>
+<p>Interactive web experiences and innovative coding patterns.</p>
+<button class="book-read-btn"><div><span>Read Book</span></div></button>
+</div>
+
+<div class="book-item" onclick="openBook('concept.pdf', 'Concept Art', 'Visual Journey')">
+<h4>Concept Art</h4>
+<p class="book-author">Visual Journey</p>
+<p>Digital art concepts and creative inspiration board.</p>
+<button class="book-read-btn"><div><span>Read Book</span></div></button>
+</div>
+
+</div>
+
+<!-- PDF Viewer -->
+<div class="pdf-viewer-container">
+
+<div class="pdf-viewer-empty" id="viewerEmpty">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+<polyline points="14 2 14 8 20 8"></polyline>
+<line x1="12" y1="11" x2="12" y2="17"></line>
+<line x1="9" y1="14" x2="15" y2="14"></line>
+</svg>
+<p id="viewerText">Select a book to read</p>
+</div>
+
+<iframe id="pdfViewer" class="pdf-viewer-frame" style="display:none;"></iframe>
+
+</div>
+
+</div>
+
+<div class="slide-dots">
+    <div class="slide-num">04</div>
+    <div class="dot" onclick="goTo('home')"></div>
+    <div class="dot" onclick="goTo('movie')"></div>
+    <div class="dot" onclick="goTo('about')"></div>
+    <div class="dot on" onclick="goTo('books')"></div>
+    <div class="dot" onclick="goTo('blog')"></div>
+    <div class="slide-num">05</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════
+  PAGE 5 — BLOG
+═══════════════════════ -->
+<div class="page" id="blog">
+  <div class="wm">BLOG</div>
+  <div class="blog-inner">
+
+    <div class="blog-card">
+      <div class="blog-date">MAY 2024 · FEATURE</div>
+      <h3>Why The Joker Is The Greatest Villain In Comic History</h3>
+      <p>An in-depth analysis of what makes Arthur Fleck's portrayal so resonant with modern audiences — the psychology of chaos, identity, and societal rejection as a mirror to our world.</p>
+      <div class="blog-tag">FEATURE</div>
+      <div class="blog-card-num">01</div>
+    </div>
+
+    <div class="blog-card">
+      <div class="blog-date">APR 2024 · REVIEW</div>
+      <h3>Joaquin Phoenix: Method Acting at Its Peak</h3>
+      <p>Breaking down the physical and psychological transformation that earned Phoenix an Academy Award.</p>
+      <div class="blog-tag">REVIEW</div>
+      <div class="blog-card-num">02</div>
+    </div>
+
+    <div class="blog-card">
+      <div class="blog-date">MAR 2024 · ANALYSIS</div>
+      <h3>Batman vs Joker: The Perfect Duality</h3>
+      <p>Order versus chaos. Two sides of the same broken coin. Why the Dark Knight and his greatest nemesis are inextricably linked.</p>
+      <div class="blog-tag">ANALYSIS</div>
+      <div class="blog-card-num">03</div>
+    </div>
+
+    <div class="blog-card">
+      <div class="blog-date">FEB 2024 · HISTORY</div>
+      <h3>The Evolution of Joker Across 80 Years of DC</h3>
+      <p>From a one-off villain to a cultural phenomenon — tracing the Clown Prince's journey through comics, TV, and film.</p>
+      <div class="blog-tag">HISTORY</div>
+      <div class="blog-card-num">04</div>
+    </div>
+
+  </div>
+
+  <div class="slide-dots">
+    <div class="slide-num">05</div>
+    <div class="dot" onclick="goTo('home')"></div>
+    <div class="dot" onclick="goTo('movie')"></div>
+    <div class="dot" onclick="goTo('about')"></div>
+    <div class="dot" onclick="goTo('books')"></div>
+    <div class="dot on" onclick="goTo('blog')"></div>
+    <div class="slide-num">05</div>
+  </div>
+</div>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script>
+// ── CURSOR
+const cur = document.getElementById('cur');
+const cur2 = document.getElementById('cur2');
+let mx=0,my=0,fx=0,fy=0;
+
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+function followCursor(){
+  fx+=(mx-fx)*0.12; fy+=(my-fy)*0.12;
+  cur2.style.left=fx+'px'; cur2.style.top=fy+'px';
+  requestAnimationFrame(followCursor);
+}
+followCursor();
+
+// ── PAGE NAVIGATION
+const pages = ['home','movie','about','books','blog'];
+const navIds = ['nav-home','nav-movie','nav-about','nav-books','nav-blog'];
+let current = 'home';
+
+function goTo(id){
+  if(id===current) return;
+  const oldPage = document.getElementById(current);
+  const newPage = document.getElementById(id);
+
+  oldPage.classList.add('page-exit');
+  setTimeout(()=>{
+    oldPage.classList.remove('active','page-exit');
+    newPage.classList.add('active','page-enter');
+    setTimeout(()=>newPage.classList.remove('page-enter'), 600);
+  }, 380);
+
+  // nav active state
+  navIds.forEach((nid,i)=>{
+    const el=document.getElementById(nid);
+    el.classList.toggle('active', pages[i]===id);
+  });
+  current=id;
+}
+
+// ── OPEN BOOK FUNCTION
+function openBook(pdfFile, title, author){
+  const viewer = document.getElementById('pdfViewer');
+  const empty = document.getElementById('viewerEmpty');
+  
+  viewer.src = pdfFile;
+  viewer.style.display = 'block';
+  empty.style.display = 'none';
+}
+
+// ── KEYBOARD NAV
+document.addEventListener('keydown',e=>{
+  const idx = pages.indexOf(current);
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(pages[Math.min(idx+1,pages.length-1)]);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') goTo(pages[Math.max(idx-1,0)]);
+});
+
+// ── WHEEL NAV
+let wheelLocked=false;
+document.addEventListener('wheel',e=>{
+  if(wheelLocked) return;
+  const idx=pages.indexOf(current);
+  if(e.deltaY>40 && idx<pages.length-1){ goTo(pages[idx+1]); wheelLocked=true; setTimeout(()=>wheelLocked=false,900); }
+  if(e.deltaY<-40 && idx>0){ goTo(pages[idx-1]); wheelLocked=true; setTimeout(()=>wheelLocked=false,900); }
+});
+
+// ── TOUCH NAV
+let touchStart=0;
+document.addEventListener('touchstart',e=>touchStart=e.touches[0].clientY);
+document.addEventListener('touchend',e=>{
+  const diff=touchStart-e.changedTouches[0].clientY;
+  const idx=pages.indexOf(current);
+  if(diff>50 && idx<pages.length-1) goTo(pages[idx+1]);
+  if(diff<-50 && idx>0) goTo(pages[idx-1]);
+});
+
+// ── MUSIC TOGGLE
+const musicBtn = document.getElementById('musicBtn');
+const bgMusic = document.getElementById('bgMusic');
+let playing = false;
+
+musicBtn.addEventListener('click',()=>{
+  if(!playing){
+    bgMusic.play();
+    musicBtn.innerText='Pause';
+    playing=true;
+  }else{
+    bgMusic.pause();
+    musicBtn.innerText='Music';
+    playing=false;
+  }
+});
+</script>
+
+<!-- Audio Element -->
+<audio id="bgMusic" loop>
+<source src="music.mp3" type="audio/mp3">
+</audio>
+</body>
+</html>
