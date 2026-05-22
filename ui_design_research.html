@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Research: The Micro-interaction Impact</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chosen Palette: Slate & Indigo Minimalist (Background: slate-50, Text: slate-800, Accent: indigo-600) -->
+    <!-- Application Structure Plan: A linear narrative dashboard. Starts with context (Methodology tabs), moves to quantitative proof (Interactive Chart.js data viewer), explores qualitative sentiment (Interactive cards), and concludes with actionable guidelines (Accordion). This structure guides the user from 'what we did' to 'what it means' to 'how to use it'. -->
+    <!-- Visualization & Content Choices: 1. Methodology -> Tabbed text -> Goal: Organize -> Keeps context compact. 2. Metrics -> Chart.js Bar/Line charts -> Goal: Compare -> Allows dynamic switching between metrics without clutter. 3. Sentiment -> Interactive Grid Cards -> Goal: Inform -> Provides qualitative depth. Library: Chart.js (Canvas), Vanilla JS, Tailwind. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container { height: 400px; }
+        }
+        .tab-active { border-bottom: 2px solid #4f46e5; color: #4f46e5; font-weight: 600; }
+        .tab-inactive { color: #64748b; }
+        .tab-inactive:hover { color: #334155; }
+        .content-hidden { display: none; }
+        .insight-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .insight-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .accordion-content { transition: max-height 0.3s ease-out; overflow: hidden; max-height: 0; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md border-b border-slate-200 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="font-bold text-xl text-indigo-700 tracking-tight">UI_Research<span class="text-slate-400">.</span></div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#overview" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition">Overview</a>
+                    <a href="#data" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition">Data Insights</a>
+                    <a href="#qualitative" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition">User Perception</a>
+                    <a href="#guidelines" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition">Guidelines</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto text-center">
+        <div class="inline-block mb-4 px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold tracking-widest uppercase">Research Report 2026</div>
+        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">The Hidden Power of <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500">Micro-interactions</span></h1>
+        <p class="text-lg md:text-xl text-slate-500 max-w-3xl mx-auto leading-relaxed mb-10">An in-depth empirical analysis of how subtle animations, feedback loops, and state changes impact cognitive load, task completion rates, and overall user retention in complex web applications.</p>
+        <a href="#overview" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition">Explore the Findings &darr;</a>
+    </header>
+
+        <!-- Paper View / Download -->
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div class="flex items-center justify-center gap-4">
+                <a href="ui_design_research_papaer.pdf" target="_blank" class="px-6 py-3 bg-indigo-600 text-white rounded-md">View Paper (New tab)</a>
+                <a href="ui_design_research_papaer.pdf" download class="px-6 py-3 border rounded-md">Download Paper</a>
+            </div>
+            <div class="chart-container mt-6">
+                <iframe src="ui_design_research_papaer.pdf" style="width:100%;height:600px;border:none;" title="UI Design Research Paper"></iframe>
+            </div>
+        </div>
+
+    <section id="overview" class="py-16 bg-white border-y border-slate-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold mb-4">Study Overview & Context</h2>
+                <p class="text-slate-600 leading-relaxed max-w-4xl">This section details the foundational parameters of our research. Understanding the demographics, methodology, and scope is critical for contextualizing the quantitative and qualitative data presented subsequently. We structured a 6-week A/B test across a diverse user base to isolate the effects of micro-interactions.</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-2 border border-slate-200">
+                <div class="flex border-b border-slate-200" id="tab-buttons">
+                    <button class="px-6 py-3 tab-active text-sm focus:outline-none" data-target="tab-methodology">&#128202; Methodology</button>
+                    <button class="px-6 py-3 tab-inactive text-sm focus:outline-none" data-target="tab-demographics">&#128101; Demographics</button>
+                    <button class="px-6 py-3 tab-inactive text-sm focus:outline-none" data-target="tab-scope">&#128269; Test Scope</button>
+                </div>
+                
+                <div class="p-6 md:p-8 bg-white rounded-b-lg">
+                    <div id="tab-methodology" class="tab-content">
+                        <h3 class="text-xl font-bold mb-3 text-slate-800">A/B Testing Framework</h3>
+                        <p class="text-slate-600 mb-4">We deployed two distinct versions of an enterprise SaaS dashboard. Version A (Control) featured standard, static state changes. Version B (Variant) integrated intentional micro-interactions for button states, data loading, error handling, and navigation transitions.</p>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-2">
+                            <li>Duration: 42 Days</li>
+                            <li>Data Collection: Heatmapping, Session Recording, Analytics events</li>
+                            <li>Post-test: System Usability Scale (SUS) survey administered to 500 random participants</li>
+                        </ul>
+                    </div>
+                    
+                    <div id="tab-demographics" class="tab-content content-hidden">
+                        <h3 class="text-xl font-bold mb-3 text-slate-800">Participant Profile</h3>
+                        <p class="text-slate-600 mb-4">The study observed n=12,450 unique active users across both test cohorts, ensuring statistical significance (p < 0.05) across all primary metrics.</p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                            <div class="bg-slate-100 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-indigo-600">65%</div><div class="text-xs text-slate-500 uppercase mt-1">Desktop Users</div></div>
+                            <div class="bg-slate-100 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-indigo-600">35%</div><div class="text-xs text-slate-500 uppercase mt-1">Mobile Users</div></div>
+                            <div class="bg-slate-100 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-indigo-600">24-45</div><div class="text-xs text-slate-500 uppercase mt-1">Core Age Range</div></div>
+                            <div class="bg-slate-100 p-4 rounded-lg text-center"><div class="text-2xl font-bold text-indigo-600">Tech</div><div class="text-xs text-slate-500 uppercase mt-1">Primary Industry</div></div>
+                        </div>
+                    </div>
+
+                    <div id="tab-scope" class="tab-content content-hidden">
+                        <h3 class="text-xl font-bold mb-3 text-slate-800">Interaction Focus Areas</h3>
+                        <p class="text-slate-600 mb-4">The micro-interactions introduced in Version B were strictly limited to the following categories to avoid cognitive overload:</p>
+                        <div class="space-y-3">
+                            <div class="flex items-start"><span class="mr-3 text-indigo-500">&#10003;</span><p class="text-slate-700"><strong>System Status:</strong> Skeleton loaders replacing generic spinners.</p></div>
+                            <div class="flex items-start"><span class="mr-3 text-indigo-500">&#10003;</span><p class="text-slate-700"><strong>Action Feedback:</strong> Subtle color shifts and physical button "depress" animations on click.</p></div>
+                            <div class="flex items-start"><span class="mr-3 text-indigo-500">&#10003;</span><p class="text-slate-700"><strong>Error Prevention:</strong> Inline validation animations (shakes for errors, smooth checks for success).</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="data" class="py-16 bg-slate-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold mb-4">Quantitative Impact</h2>
+                <p class="text-slate-600 leading-relaxed max-w-4xl">This interactive visualization presents the core numerical findings of the study. Use the selectors below to explore how the introduction of micro-interactions altered user behavior across three key performance indicators: 30-Day Retention, Task Completion Speed, and Form Error Rates. The data clearly indicates a positive correlation between systemic feedback and user success.</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8">
+                <div class="flex flex-wrap gap-2 mb-8" id="chart-controls">
+                    <button class="metric-btn px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium transition" data-metric="retention">User Retention Rates</button>
+                    <button class="metric-btn px-4 py-2 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 text-sm font-medium transition" data-metric="speed">Task Completion Time</button>
+                    <button class="metric-btn px-4 py-2 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 text-sm font-medium transition" data-metric="errors">Input Error Rates</button>
+                </div>
+
+                <div class="mb-6">
+                    <h3 id="chart-title" class="text-xl font-bold text-slate-800">30-Day User Retention</h3>
+                    <p id="chart-desc" class="text-sm text-slate-500 mt-1">Comparing the percentage of users returning to the platform within 30 days of their initial session.</p>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="mainChart"></canvas>
+                </div>
+                
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-6">
+                    <div>
+                        <div class="text-sm text-slate-500 uppercase tracking-wide">Key Takeaway</div>
+                        <div id="chart-takeaway" class="text-slate-800 font-medium mt-1">Micro-interactions increased baseline retention by 22%, suggesting users feel more anchored and guided within the system.</div>
+                    </div>
+                    <div class="text-right flex flex-col justify-center">
+                        <div class="text-sm text-slate-500 uppercase tracking-wide">Statistical Significance</div>
+                        <div class="text-emerald-600 font-bold mt-1">&#10003; High (p < 0.01)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="qualitative" class="py-16 bg-white border-t border-slate-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-12">
+                <h2 class="text-3xl font-bold mb-4">User Perception & Qualitative Feedback</h2>
+                <p class="text-slate-600 leading-relaxed max-w-4xl">Numbers only tell half the story. To understand *why* the metrics improved, we analyzed sentiment from 1,200 user session feedback forms. We found that micro-interactions directly alter the user's perception of system performance and their own cognitive burden. Below are the dominant themes extracted from qualitative analysis.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="insight-card bg-slate-50 rounded-xl p-6 border border-slate-200 cursor-default">
+                    <div class="text-3xl mb-4">&#9201;</div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Perceived Speed</h3>
+                    <p class="text-sm text-slate-600 mb-4">Despite identical backend response times, 78% of users in Cohort B (with animations) described the system as "faster" or "more responsive" compared to Cohort A.</p>
+                    <div class="text-xs font-mono text-indigo-600 bg-indigo-50 inline-block px-2 py-1 rounded">Illusion of Speed</div>
+                </div>
+
+                <div class="insight-card bg-slate-50 rounded-xl p-6 border border-slate-200 cursor-default">
+                    <div class="text-3xl mb-4">&#129488;</div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Reduced Anxiety</h3>
+                    <p class="text-sm text-slate-600 mb-4">Inline validation with subtle color shifts before form submission drastically reduced user apprehension. "I knew I did it right before I clicked save."</p>
+                    <div class="text-xs font-mono text-indigo-600 bg-indigo-50 inline-block px-2 py-1 rounded">Confidence Boost</div>
+                </div>
+
+                <div class="insight-card bg-slate-50 rounded-xl p-6 border border-slate-200 cursor-default">
+                    <div class="text-3xl mb-4">&#128161;</div>
+                    <h3 class="text-lg font-bold text-slate-800 mb-2">Guided Attention</h3>
+                    <p class="text-sm text-slate-600 mb-4">State transitions in navigation helped users maintain spatial awareness. Heatmaps showed less erratic mouse movement during complex multi-step workflows.</p>
+                    <div class="text-xs font-mono text-indigo-600 bg-indigo-50 inline-block px-2 py-1 rounded">Cognitive Flow</div>
+                </div>
+            </div>
+            
+            <div class="mt-12 bg-indigo-900 rounded-xl p-8 text-center text-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 opacity-10 text-9xl transform translate-x-1/4 -translate-y-1/4">&#10077;</div>
+                <p class="text-xl md:text-2xl font-light italic max-w-3xl mx-auto relative z-10">"The application didn't just feel like a tool anymore; it felt like a dialogue. It acknowledged my inputs instantly, making the workflow feel effortless."</p>
+                <div class="mt-4 text-indigo-300 text-sm font-medium relative z-10">- Participant #4092, Enterprise Analytics Tier</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="guidelines" class="py-16 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-12 text-center">
+                <h2 class="text-3xl font-bold mb-4">Implementation Guidelines</h2>
+                <p class="text-slate-600 leading-relaxed">Based on our findings, we have synthesized four critical rules for designing and implementing micro-interactions. Click each rule to expand the detailed architectural recommendations.</p>
+            </div>
+
+            <div class="space-y-4" id="accordion-container">
+                <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                    <button class="accordion-btn w-full px-6 py-4 text-left font-bold text-slate-800 flex justify-between items-center focus:outline-none hover:bg-slate-50">
+                        <span>1. Keep it Invisible (Subtlety is Key)</span>
+                        <span class="text-indigo-600 transform transition-transform duration-200 icon-arrow">&#9660;</span>
+                    </button>
+                    <div class="accordion-content bg-white px-6">
+                        <p class="text-slate-600 pb-4 pt-2">Micro-interactions should be felt, not necessarily observed. If an animation draws attention to itself rather than the task, it has failed. Keep transition times under 300ms. Human perception of cause-and-effect breaks down if feedback takes longer than 0.1 seconds (100ms).</p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                    <button class="accordion-btn w-full px-6 py-4 text-left font-bold text-slate-800 flex justify-between items-center focus:outline-none hover:bg-slate-50">
+                        <span>2. Maintain Predictability (Don't Re-invent Physics)</span>
+                        <span class="text-indigo-600 transform transition-transform duration-200 icon-arrow">&#9660;</span>
+                    </button>
+                    <div class="accordion-content bg-white px-6">
+                        <p class="text-slate-600 pb-4 pt-2">Animations should map to real-world physics. Objects should ease-in and ease-out. A modal dropping from the top should have a slight bounce; a menu sliding from the side should decelerate. Using linear animations makes interfaces feel robotic and jarring, increasing cognitive load.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                    <button class="accordion-btn w-full px-6 py-4 text-left font-bold text-slate-800 flex justify-between items-center focus:outline-none hover:bg-slate-50">
+                        <span>3. State Status Clearly (The Skeleton Loader Rule)</span>
+                        <span class="text-indigo-600 transform transition-transform duration-200 icon-arrow">&#9660;</span>
+                    </button>
+                    <div class="accordion-content bg-white px-6">
+                        <p class="text-slate-600 pb-4 pt-2">Never leave the user guessing if the system is working. Replace static loading spinners with skeleton screens that mimic the layout of the incoming data. This manages expectations and leverages the "Illusion of Speed" identified in our qualitative research, making wait times feel 20-30% shorter.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                    <button class="accordion-btn w-full px-6 py-4 text-left font-bold text-slate-800 flex justify-between items-center focus:outline-none hover:bg-slate-50">
+                        <span>4. Provide Immediate Error Context</span>
+                        <span class="text-indigo-600 transform transition-transform duration-200 icon-arrow">&#9660;</span>
+                    </button>
+                    <div class="accordion-content bg-white px-6">
+                        <p class="text-slate-600 pb-4 pt-2">When input fails validation, a subtle horizontal shake animation (mimicking a head shake) combined with an immediate inline text explanation reduces subsequent error rates by up to 73%. Do not wait for server-side submission to provide form feedback.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center text-sm border-t border-slate-800">
+        <p>&copy; 2026 UI/UX Research Institute. Abstract visual presentation generated for conceptual demonstration.</p>
+    </footer>
+
+    <script>
+        const tabBtns = document.querySelectorAll('#tab-buttons button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => {
+                    b.classList.remove('tab-active');
+                    b.classList.add('tab-inactive');
+                });
+                
+                btn.classList.remove('tab-inactive');
+                btn.classList.add('tab-active');
+
+                const targetId = btn.getAttribute('data-target');
+                tabContents.forEach(content => {
+                    if(content.id === targetId) {
+                        content.classList.remove('content-hidden');
+                    } else {
+                        content.classList.add('content-hidden');
+                    }
+                });
+            });
+        });
+
+        const accordions = document.querySelectorAll('.accordion-btn');
+        accordions.forEach(acc => {
+            acc.addEventListener('click', function() {
+                const arrow = this.querySelector('.icon-arrow');
+                const content = this.nextElementSibling;
+                
+                const isOpen = content.style.maxHeight;
+
+                accordions.forEach(otherAcc => {
+                    otherAcc.querySelector('.icon-arrow').style.transform = 'rotate(0deg)';
+                    otherAcc.nextElementSibling.style.maxHeight = null;
+                });
+
+                if (!isOpen) {
+                    arrow.style.transform = 'rotate(180deg)';
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        });
+
+        const chartConfigData = {
+            retention: {
+                title: "30-Day User Retention",
+                desc: "Comparing the percentage of users returning to the platform within 30 days of their initial session.",
+                takeaway: "Micro-interactions increased baseline retention from 45% to 67%, suggesting users feel more anchored and guided within the system.",
+                type: 'bar',
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                datasets: [
+                    {
+                        label: 'Static UI (Control)',
+                        data: [75, 58, 48, 45],
+                        backgroundColor: '#cbd5e1',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Micro-interactions UI (Variant)',
+                        data: [82, 74, 69, 67],
+                        backgroundColor: '#4f46e5',
+                        borderRadius: 4
+                    }
+                ],
+                yTitle: 'Retention %'
+            },
+            speed: {
+                title: "Task Completion Speed (Seconds)",
+                desc: "Average time taken to complete a complex multi-step data entry workflow.",
+                takeaway: "Despite added animation duration, actual task completion times dropped by an average of 25 seconds, likely due to reduced hesitation.",
+                type: 'line',
+                labels: ['Step 1', 'Step 2', 'Step 3', 'Step 4', 'Final Submit'],
+                datasets: [
+                    {
+                        label: 'Static UI (Control)',
+                        data: [25, 55, 85, 110, 135],
+                        borderColor: '#94a3b8',
+                        backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Micro-interactions UI (Variant)',
+                        data: [20, 42, 65, 85, 110],
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    }
+                ],
+                yTitle: 'Cumulative Seconds'
+            },
+            errors: {
+                title: "Form Input Error Rates",
+                desc: "Percentage of sessions containing at least one form validation error upon submission.",
+                takeaway: "Inline, animated validation feedback drastically reduced submission errors, preventing user frustration at the final step.",
+                type: 'bar',
+                labels: ['Registration', 'Payment Config', 'Profile Setup', 'Data Import'],
+                datasets: [
+                    {
+                        label: 'Static UI (Control)',
+                        data: [12, 28, 15, 34],
+                        backgroundColor: '#f87171',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Micro-interactions UI (Variant)',
+                        data: [4, 11, 3, 12],
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    }
+                ],
+                yTitle: 'Error Rate %'
+            }
+        };
+
+        let myChart = null;
+        const ctx = document.getElementById('mainChart').getContext('2d');
+
+        function renderChart(metricKey) {
+            const dataObj = chartConfigData[metricKey];
+            
+            document.getElementById('chart-title').innerText = dataObj.title;
+            document.getElementById('chart-desc').innerText = dataObj.desc;
+            document.getElementById('chart-takeaway').innerText = dataObj.takeaway;
+
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            myChart = new Chart(ctx, {
+                type: dataObj.type,
+                data: {
+                    labels: dataObj.labels,
+                    datasets: dataObj.datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: { family: 'system-ui', size: 13 },
+                                usePointStyle: true,
+                                boxWidth: 8
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleFont: { size: 14, family: 'system-ui' },
+                            bodyFont: { size: 13, family: 'system-ui' },
+                            padding: 12,
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: dataObj.yTitle,
+                                color: '#64748b',
+                                font: { size: 12 }
+                            },
+                            grid: { color: '#f1f5f9', drawBorder: false }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        renderChart('retention');
+
+        const metricBtns = document.querySelectorAll('.metric-btn');
+        metricBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                metricBtns.forEach(b => {
+                    b.classList.remove('bg-indigo-600', 'text-white');
+                    b.classList.add('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+                });
+                
+                const clickedBtn = e.target;
+                clickedBtn.classList.remove('bg-slate-100', 'text-slate-600', 'hover:bg-slate-200');
+                clickedBtn.classList.add('bg-indigo-600', 'text-white');
+
+                const metric = clickedBtn.getAttribute('data-metric');
+                renderChart(metric);
+            });
+        });
+    </script>
+</body>
+</html>
