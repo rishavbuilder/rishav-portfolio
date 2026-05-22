@@ -1044,19 +1044,31 @@ right:20px;
 }
 
   .books-container{
+    position:static;
     grid-template-columns:1fr;
-    padding:80px 20px 20px;
-    gap:24px;
-    position:relative;
+    padding:80px 16px 20px;
+    gap:18px;
   }
 
   .books-library{
-    max-height:50vh;
+    max-height:none;
+    overflow:visible;
+    padding-right:0;
   }
 
   .book-item{
     transform:none;
-    padding:16px;
+    padding:18px;
+    margin-bottom:16px;
+  }
+
+  .book-item:hover{
+    transform:none;
+    border-color:transparent;
+  }
+
+  .book-item h4{
+    font-size:16px;
   }
 
   .book-card-row{
@@ -1067,7 +1079,8 @@ right:20px;
   .book-cover-square{
     min-width:auto;
     max-width:100%;
-    height:180px;
+    width:100%;
+    height:210px;
     margin-top:16px;
   }
 
@@ -1076,7 +1089,8 @@ right:20px;
   }
 
   .pdf-viewer-container{
-    min-height:320px;
+    min-height:300px;
+    margin-top:18px;
   }
 
   #musicOverlay{
