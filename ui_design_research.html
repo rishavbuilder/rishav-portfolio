@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <title>UI Research: The Micro-interaction Impact</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -36,32 +39,23 @@ body{
 }
 
 /* ── CURSOR ── */
-#c-ring, #c-dot {
-  display: none;
+#c-ring{
+  position:fixed; width:34px; height:34px;
+  border:2px solid var(--accent);
+  border-radius:50%;
+  pointer-events:none; z-index:99999;
+  transform:translate(-50%,-50%);
+  transition:left .1s,top .1s,width .2s,height .2s,background .2s;
 }
-
-@media (hover: hover) and (pointer: fine) {
-  * { cursor: none !important; }
-  #c-ring, #c-dot {
-    display: block;
-  }
-  #c-ring{
-    position:fixed; width:34px; height:34px;
-    border:2px solid var(--accent);
-    border-radius:50%;
-    pointer-events:none; z-index:99999;
-    transform:translate(-50%,-50%);
-    transition:left .1s,top .1s,width .2s,height .2s,background .2s;
-  }
-  #c-dot{
-    position:fixed; width:7px; height:7px;
-    background:var(--accent);
-    border-radius:50%;
-    pointer-events:none; z-index:99999;
-    transform:translate(-50%,-50%);
-  }
-  #c-ring.hover{ width:52px; height:52px; background:rgba(167,139,250,.1); }
+#c-dot{
+  position:fixed; width:7px; height:7px;
+  background:var(--accent);
+  border-radius:50%;
+  pointer-events:none; z-index:99999;
+  transform:translate(-50%,-50%);
 }
+#c-ring.hover{ width:52px; height:52px; background:rgba(167,139,250,.1); }
+*{ cursor:none !important; }
 
 /* ── PROGRESS BAR ── */
 #pg-bar{
@@ -518,96 +512,113 @@ footer p{ font-size:12px; color:var(--muted); }
 }
 .reveal.visible{ opacity:1; transform:translateY(0); }
 
+/* =========================
+PERFORMANCE
+========================= */
+.insight-card, .acc-item{ will-change:transform; }
+nav{ will-change:transform; }
+#c-ring, #c-dot{ will-change:left,top; }
+
+@media(prefers-reduced-motion:reduce){
+  *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  .reveal{ opacity:1; transform:none; }
+}
+@media(hover:none){
+  #c-ring, #c-dot{ display:none; }
+  *{ cursor:auto !important; }
+  .insight-card:hover{ transform:none; }
+  .insight-card:hover::before{ transform:scaleX(0); }
+}
+
+/* =========================
+TABLET — 1024px
+========================= */
+@media(max-width:1024px){
+  nav{ padding:0 24px; }
+  .hero{ padding:0 32px; }
+  .hero-title{ font-size:clamp(52px,9vw,90px); }
+  .insight-grid{ grid-template-columns:1fr 1fr; gap:16px; }
+  section{ padding:64px 32px; }
+  .pdf-section{ padding:64px 32px; }
+}
+
+/* =========================
+TABLET — 768px
+========================= */
 @media(max-width:768px){
-  nav{ padding:0 20px; }
-  
-  .menu-toggle {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 24px;
-    height: 18px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    z-index: 1001;
-    padding: 0;
-  }
+  html{ overflow-x:hidden; }
 
-  .menu-toggle .bar {
-    width: 100%;
-    height: 2px;
-    background-color: var(--text);
-    transition: all 0.3s ease;
-    border-radius: 2px;
-  }
+  nav{ padding:0 16px; height:56px; }
+  .nav-links{ display:none; }
+  .nav-back{ font-size:11px; padding:6px 12px; }
 
-  .menu-toggle.open .bar:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
+  .hero{
+    padding:80px 18px 50px;
+    min-height:auto;
+    padding-top:100px;
   }
+  .hero-bg, .hero-grid{ display:none; } /* perf on mobile */
+  .hero-title{ font-size:clamp(44px,12vw,76px); }
+  .hero-stats{ flex-wrap:wrap; gap:20px; }
+  .h-stat-num{ font-size:34px; }
+  .hero-cta{ padding:12px 22px; font-size:12px; }
 
-  .menu-toggle.open .bar:nth-child(2) {
-    opacity: 0;
-  }
+  .insight-grid{ grid-template-columns:1fr; gap:14px; }
+  .demo-stats{ grid-template-columns:1fr 1fr; gap:10px; }
+  .takeaway-row{ grid-template-columns:1fr; gap:16px; }
+  .takeaway-row > div:last-child{ text-align:left !important; }
+  .takeaway-row > div:last-child > div{ text-align:left !important; }
 
-  .menu-toggle.open .bar:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
-  }
+  section{ padding:52px 16px; }
+  .pdf-section{ padding:52px 16px; }
+  .max-w{ padding:0; }
 
-  .nav-links {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 280px;
-    height: 100vh;
-    background: rgba(10, 10, 15, 0.96);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-    padding: 100px 30px;
-    gap: 20px;
-    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 999;
-    border-left: 1px solid var(--border);
-  }
+  .pdf-toolbar{ flex-direction:column; gap:10px; align-items:flex-start; padding:12px 14px; }
+  .pdf-toolbar-right{ width:100%; }
+  .pdf-btn{ flex:1; justify-content:center; font-size:11px; }
+  .pdf-embed-area{ height:360px; }
 
-  .nav-links.open {
-    right: 0;
-    display: flex;
-  }
+  .tab-bar{ flex-wrap:wrap; width:100%; gap:6px; }
+  .tab-item{ font-size:12px; padding:7px 14px; }
 
-  .nav-links a {
-    font-size: 18px;
-    padding: 10px 0;
-    display: block;
-    width: 100%;
-    color: var(--text);
-  }
+  .chart-wrap{ height:260px; }
+  .chart-box{ padding:20px 16px; }
 
-  .nav-links .nav-back-mobile {
-    display: block !important;
-    margin-top: 20px;
-    border-top: 1px solid var(--border);
-    padding-top: 20px;
-    color: var(--accent);
-  }
+  .quote-block{ padding:32px 20px; }
+  .quote-text{ font-size:15px; }
+  .quote-block::before{ font-size:180px; }
 
-  .nav-back {
-    display: none !important;
-  }
+  .acc-btn{ font-size:14px; padding:16px 18px; }
+  .acc-body-inner{ padding:0 18px 18px 52px; font-size:13px; }
+  .acc-num{ width:24px; height:24px; margin-right:10px; font-size:11px; }
 
-  .hero{ padding:100px 20px 60px; }
-  .hero-stats{ flex-wrap:wrap; gap:24px; }
-  section{ padding:60px 20px; }
-  .insight-grid{ grid-template-columns:1fr; }
-  .demo-stats{ grid-template-columns:1fr 1fr; }
-  .takeaway-row{ grid-template-columns:1fr; }
-  .pdf-section{ padding:60px 20px; }
-  .pdf-toolbar{ flex-direction:column; gap:12px; align-items:flex-start; }
-  .pdf-embed-area{ height:400px; }
-  footer{ padding:30px 20px; flex-direction:column; text-align:center; }
+  footer{ padding:24px 16px; flex-direction:column; text-align:center; gap:12px; }
+
+  .reveal{ opacity:1; transform:none; } /* skip reveal on mobile for perf */
+}
+
+/* =========================
+PHONE — 480px
+========================= */
+@media(max-width:480px){
+  .hero-tag{ font-size:10px; padding:5px 12px; }
+  .hero-title{ font-size:clamp(38px,13vw,62px); }
+  .hero-stats{ gap:16px; }
+  .h-stat-num{ font-size:28px; }
+  .section-title{ font-size:clamp(28px,8vw,44px); }
+  .insight-card{ padding:20px; }
+  .insight-icon{ width:36px; height:36px; font-size:17px; }
+  .demo-stat-num{ font-size:22px; }
+  .acc-btn{ font-size:13px; }
+  .pdf-embed-area{ height:300px; }
+}
+
+/* =========================
+LANDSCAPE PHONE
+========================= */
+@media(max-height:500px) and (max-width:900px){
+  .hero{ padding-top:70px; min-height:auto; }
+  .hero-title{ font-size:clamp(36px,7vh,60px); }
 }
 </style>
 </head>
@@ -621,23 +632,14 @@ footer p{ font-size:12px; color:var(--muted); }
 <!-- NAV -->
 <nav>
   <div class="nav-logo">UI_Research<span>.</span></div>
-  <div class="nav-links" id="navLinks">
-    <a href="#overview" onclick="closeMenu()">Overview</a>
-    <a href="#paper" onclick="closeMenu()">Paper</a>
-    <a href="#data" onclick="closeMenu()">Data Insights</a>
-    <a href="#qualitative" onclick="closeMenu()">Perception</a>
-    <a href="#guidelines" onclick="closeMenu()">Guidelines</a>
-    <a href="index.html" class="nav-back-mobile" style="display:none;">← Portfolio</a>
+  <div class="nav-links">
+    <a href="#overview">Overview</a>
+    <a href="#paper">Paper</a>
+    <a href="#data">Data Insights</a>
+    <a href="#qualitative">Perception</a>
+    <a href="#guidelines">Guidelines</a>
   </div>
-  
-  <div class="nav-right" style="display:flex; align-items:center; gap:16px;">
-    <a href="index.html" class="nav-back">← Back to Portfolio</a>
-    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation" onclick="toggleMenu(event)">
-      <span class="bar"></span>
-      <span class="bar"></span>
-      <span class="bar"></span>
-    </button>
-  </div>
+  <a href="index.html" class="nav-back">← Back to Portfolio</a>
 </nav>
 
 <!-- HERO -->
@@ -954,6 +956,7 @@ footer p{ font-size:12px; color:var(--muted); }
 
 <script>
 /* ── CURSOR ── */
+if(window.matchMedia('(hover:hover)').matches){
 const cRing = document.getElementById('c-ring');
 const cDot  = document.getElementById('c-dot');
 document.addEventListener('mousemove', e=>{
@@ -964,6 +967,12 @@ document.querySelectorAll('a,button').forEach(el=>{
   el.addEventListener('mouseenter',()=>cRing.classList.add('hover'));
   el.addEventListener('mouseleave',()=>cRing.classList.remove('hover'));
 });
+} else {
+  const cr = document.getElementById('c-ring');
+  const cd = document.getElementById('c-dot');
+  if(cr) cr.style.display='none';
+  if(cd) cd.style.display='none';
+}
 
 /* ── SCROLL PROGRESS ── */
 window.addEventListener('scroll',()=>{
@@ -1096,30 +1105,6 @@ document.querySelectorAll('.metric-pill').forEach(btn=>{
     btn.classList.add('active');
     renderChart(btn.dataset.metric);
   });
-});
-
-/* ── MOBILE MENU SYSTEM ── */
-function toggleMenu(e) {
-  e.stopPropagation();
-  const menuToggle = document.getElementById('menuToggle');
-  const navLinks = document.getElementById('navLinks');
-  if (menuToggle && navLinks) {
-    menuToggle.classList.toggle('open');
-    navLinks.classList.toggle('open');
-  }
-}
-
-function closeMenu() {
-  const menuToggle = document.getElementById('menuToggle');
-  const navLinks = document.getElementById('navLinks');
-  if (menuToggle && navLinks) {
-    menuToggle.classList.remove('open');
-    navLinks.classList.remove('open');
-  }
-}
-
-document.addEventListener('click', () => {
-  closeMenu();
 });
 </script>
 </body>

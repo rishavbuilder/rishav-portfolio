@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ebebeb">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <title>Rishav Builder — Portfolio</title>
 
@@ -16,6 +19,11 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+
+html{
+overflow-x:hidden;
 }
 
 :root{
@@ -40,18 +48,6 @@ overflow:hidden;
 cursor:auto;
 user-select:none;
 }
-
-/* =========================
-PROGRESS BAR
-========================= */
-
-/* Progress tracking script is placed in the script section below. */
-
-/* =========================
-CONTACT FORM
-========================= */
-
-/* Contact form submit behavior is implemented in the script section below. */
 
 /* =========================
 LOADER
@@ -203,11 +199,13 @@ right:-20px;
 top:50%;
 transform:translateY(-50%);
 font-family:'Bebas Neue',sans-serif;
-font-size:clamp(100px,14vw,190px);
+font-size:clamp(80px,14vw,190px);
 color:rgba(0,0,0,.05);
 letter-spacing:.02em;
 white-space:nowrap;
 pointer-events:none;
+overflow:hidden;
+max-width:100vw;
 }
 
 /* =========================
@@ -866,38 +864,143 @@ display:block;
 .pdf-viewer-container{
 position:relative;
 height:100%;
-background:#f5f5f5;
-border-radius:14px;
+background:rgba(255,255,255,.55);
+border-radius:18px;
 overflow:hidden;
-border:1px solid #e0e0e0;
+border:1.5px solid rgba(0,0,0,.09);
+display:flex;
+flex-direction:column;
 }
 
+body.theme-dark .pdf-viewer-container{
+background:#0f0f18;
+border-color:rgba(255,255,255,.08);
+}
+body.theme-glass .pdf-viewer-container{
+background:rgba(255,255,255,.04);
+border-color:rgba(255,255,255,.12);
+backdrop-filter:blur(12px);
+}
+
+/* PDF toolbar */
+.pdf-viewer-toolbar{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:11px 16px;
+background:rgba(255,255,255,.8);
+border-bottom:1px solid rgba(0,0,0,.07);
+flex-shrink:0;
+}
+body.theme-dark .pdf-viewer-toolbar{
+background:rgba(20,20,32,.9);
+border-bottom-color:rgba(255,255,255,.07);
+}
+body.theme-glass .pdf-viewer-toolbar{
+background:rgba(255,255,255,.07);
+border-bottom-color:rgba(255,255,255,.1);
+}
+
+.pdf-tb-dots{ display:flex; gap:6px; align-items:center; }
+.pdf-tb-dot{
+width:11px; height:11px; border-radius:50%;
+}
+.pdf-tb-dot.r{ background:#f87171; }
+.pdf-tb-dot.y{ background:#fbbf24; }
+.pdf-tb-dot.g{ background:#34d399; }
+.pdf-tb-name{
+font-size:11px;
+color:var(--gray);
+margin-left:10px;
+}
+
+.pdf-tb-actions{ display:flex; gap:8px; }
+.pdf-tb-btn{
+padding:5px 12px;
+border-radius:20px;
+font-size:11px;
+font-weight:600;
+font-family:'DM Sans',sans-serif;
+border:none;
+transition:.25s;
+text-decoration:none;
+display:inline-flex;
+align-items:center;
+gap:5px;
+}
+.pdf-tb-btn.primary{
+background:var(--black);
+color:var(--bg);
+}
+.pdf-tb-btn.ghost{
+background:rgba(0,0,0,.07);
+color:var(--black);
+}
+body.theme-dark .pdf-tb-btn.ghost,
+body.theme-glass .pdf-tb-btn.ghost{
+background:rgba(255,255,255,.1);
+color:var(--black);
+}
+.pdf-tb-btn:hover{ opacity:.85; }
+
 .pdf-viewer-empty{
-position:absolute;
-inset:0;
+flex:1;
 display:flex;
 align-items:center;
 justify-content:center;
 flex-direction:column;
-color:#999;
-}
-
-.pdf-viewer-empty svg{
-width:60px;
-height:60px;
-margin-bottom:20px;
-opacity:.4;
-}
-
-.pdf-viewer-empty p{
-font-size:14px;
+color:var(--gray);
+padding:40px;
 text-align:center;
 }
 
+.pdf-viewer-empty svg{
+width:52px;
+height:52px;
+margin-bottom:16px;
+opacity:.3;
+}
+
+.pdf-viewer-empty p{
+font-size:13px;
+line-height:1.7;
+}
+.pdf-viewer-empty span{
+font-size:11px;
+letter-spacing:.06em;
+text-transform:uppercase;
+color:var(--gray);
+margin-top:10px;
+display:block;
+}
+
 .pdf-viewer-frame{
+flex:1;
 width:100%;
-height:100%;
 border:none;
+display:none;
+}
+
+/* active book indicator */
+.pdf-book-info{
+padding:10px 16px;
+font-size:12px;
+color:var(--gray);
+display:none;
+align-items:center;
+gap:8px;
+background:rgba(0,0,0,.03);
+border-top:1px solid rgba(0,0,0,.06);
+}
+body.theme-dark .pdf-book-info{
+background:rgba(255,255,255,.02);
+border-top-color:rgba(255,255,255,.06);
+}
+.pdf-book-info.show{ display:flex; }
+.pdf-book-dot{
+width:7px; height:7px; border-radius:50%;
+background:#34d399;
+animation:blink .9s infinite;
 }
 
 /* =========================
@@ -1144,14 +1247,7 @@ color:#555;
 font-size:13px;
 }
 
-@media(max-width:768px){
-.contact-inner{
-grid-template-columns:1fr;
-padding:90px 20px 20px;
-gap:28px;
-overflow-y:auto;
-}
-}
+/* old responsive rules moved to unified block above */
 
 /* =========================
 LOADER IMPROVED
@@ -1178,274 +1274,48 @@ to{ opacity:1; }
 
 
 
-@media(max-width:768px){
-
-/* Mobile Navigation Drawer styles */
-.menu-toggle {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 24px;
-  height: 18px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  z-index: 1001;
-  padding: 0;
-}
-
-.menu-toggle .bar {
-  width: 100%;
-  height: 2px;
-  background-color: var(--black);
-  transition: all 0.3s ease;
-  border-radius: 2px;
-}
-
-.menu-toggle.open .bar:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
-}
-
-.menu-toggle.open .bar:nth-child(2) {
-  opacity: 0;
-}
-
-.menu-toggle.open .bar:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
-}
-
-.nav-links {
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0;
-  right: -100%;
-  width: 280px;
-  height: 100vh;
-  background: rgba(235, 235, 235, 0.96);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
-  padding: 100px 30px;
-  gap: 20px;
-  transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 999;
-  border-left: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-body.theme-dark .nav-links {
-  background: rgba(10, 10, 15, 0.96);
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-body.theme-glass .nav-links {
-  background: rgba(15, 23, 42, 0.94);
-  border-left: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.nav-links.open {
-  right: 0;
-  display: flex;
-}
-
-.nav-links a {
-  font-size: 18px;
-  padding: 10px 0;
-  display: block;
-  width: 100%;
-}
-
-nav{
-  padding:16px 20px;
-}
-
-.hero-content{
-  left:20px;
-  bottom:100px;
-}
-
-.hero-title{
-  font-size:76px;
-}
-
-.hero-img img{
-  max-width:100vw;
-}
-
-.movie-grid{
-  grid-template-columns:1fr 1fr;
-  padding:90px 20px 20px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.movie-card:first-child{
-  grid-column:span 2;
-}
-
-.about-inner{
-  grid-template-columns:1fr;
-  padding:90px 20px 20px;
-  gap:24px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.about-img-wrap{
-  height:40vh;
-}
-
-.blog-inner{
-  grid-template-columns:1fr;
-  padding:90px 20px 20px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.blog-card:first-child{
-  grid-column:span 1;
-}
-
-.slide-dots{
-  right:16px;
-  display: none;
-}
-
-.scroll-hint{
-  left:20px;
-  display: none;
-}
-
-.char-icon{
-  right:20px;
-  bottom: 20px;
-}
-
-.books-container{
-  position: absolute;
-  inset: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  grid-template-columns: 1fr;
-  padding: 90px 20px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.books-library{
-  max-height:none;
-  overflow:visible;
-  padding-right:0;
-}
-
-.book-item{
-  transform:none;
-  padding:18px;
-  margin-bottom:0;
-}
-
-.book-item:hover{
-  transform:none;
-  border-color:transparent;
-}
-
-.book-item h4{
-  font-size:16px;
-}
-
-.book-card-row{
-  flex-direction:column;
-  align-items:stretch;
-}
-
-.book-cover-square{
-  min-width:auto;
-  max-width:100%;
-  width:100%;
-  height:210px;
-  margin-top:16px;
-}
-
-.book-cover-square img{
-  height:100%;
-}
-
-.pdf-viewer-container{
-  min-height:350px;
-  margin-top:18px;
-}
-
-#musicOverlay{
-  right:12px;
-  bottom:12px;
-}
-
-.music-player-panel{
-  width:calc(100vw - 36px);
-  right:18px;
-  left:18px;
-  bottom:18px;
-}
-
-.music-widget{
-  justify-content:flex-end;
-}
-
-.music-player-panel .book-read-btn{
-  width:100%;
-}
-
-}
+/* old responsive rules merged above */
 
 /* =========================
 CUSTOM CURSORS
 ========================= */
 
-#cur-outer, #cur-dot {
-  display: none;
+*{ cursor: none !important; }
+
+#cur-outer{
+  position:fixed;
+  width:36px; height:36px;
+  border-radius:50%;
+  border:2px solid #111;
+  pointer-events:none;
+  z-index:99998;
+  transform:translate(-50%,-50%);
+  transition:left .1s ease,top .1s ease,width .2s,height .2s,border-color .3s,background .3s,border-radius .3s;
+}
+#cur-dot{
+  position:fixed;
+  width:8px; height:8px;
+  border-radius:50%;
+  background:#111;
+  pointer-events:none;
+  z-index:99999;
+  transform:translate(-50%,-50%);
+  transition:background .3s, width .2s, height .2s;
+}
+#cur-outer.hover{
+  width:56px; height:56px;
+  background:rgba(0,0,0,.07);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  * { cursor: none !important; }
-  #cur-outer, #cur-dot {
-    display: block;
-  }
-  #cur-outer{
-    position:fixed;
-    width:36px; height:36px;
-    border-radius:50%;
-    border:2px solid #111;
-    pointer-events:none;
-    z-index:99998;
-    transform:translate(-50%,-50%);
-    transition:left .1s ease,top .1s ease,width .2s,height .2s,border-color .3s,background .3s,border-radius .3s;
-  }
-  #cur-dot{
-    position:fixed;
-    width:8px; height:8px;
-    border-radius:50%;
-    background:#111;
-    pointer-events:none;
-    z-index:99999;
-    transform:translate(-50%,-50%);
-    transition:background .3s, width .2s, height .2s;
-  }
-  #cur-outer.hover{
-    width:56px; height:56px;
-    background:rgba(0,0,0,.07);
-  }
+/* dark cursor */
+body.theme-dark #cur-outer{ border-color:#a78bfa; }
+body.theme-dark #cur-dot{ background:#a78bfa; }
+body.theme-dark #cur-outer.hover{ background:rgba(167,139,250,.12); }
 
-  /* dark cursor */
-  body.theme-dark #cur-outer{ border-color:#a78bfa; }
-  body.theme-dark #cur-dot{ background:#a78bfa; }
-  body.theme-dark #cur-outer.hover{ background:rgba(167,139,250,.12); }
-
-  /* glass cursor */
-  body.theme-glass #cur-outer{ border-color:#38bdf8; background:rgba(56,189,248,.05); }
-  body.theme-glass #cur-dot{ background:#38bdf8; }
-  body.theme-glass #cur-outer.hover{ background:rgba(56,189,248,.18); }
-}
+/* glass cursor */
+body.theme-glass #cur-outer{ border-color:#38bdf8; background:rgba(56,189,248,.05); }
+body.theme-glass #cur-dot{ background:#38bdf8; }
+body.theme-glass #cur-outer.hover{ background:rgba(56,189,248,.18); }
 
 /* =========================
 THEME VARS — DARK
@@ -1662,25 +1532,316 @@ from{ opacity:0; transform:scale(.93); }
 to{ opacity:1; transform:scale(1); }
 }
 
+/* =========================
+PERFORMANCE — GPU LAYERS
+========================= */
+.page{ will-change:opacity; }
+.movie-card, .blog-card, .book-item{ will-change:transform; }
+.ftag{ will-change:transform; }
+nav{ will-change:transform; }
+#cur-outer, #cur-dot{ will-change:left,top; }
+
+/* reduce motion for accessibility */
+@media(prefers-reduced-motion:reduce){
+  *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+}
+
+/* touch devices — remove hover effects that cause tap delay */
+@media(hover:none){
+  .movie-card:hover, .blog-card:hover, .book-item:hover{ transform:none; }
+  .ftag{ animation:none; }
+  #cur-outer, #cur-dot{ display:none; }
+  *{ cursor:auto !important; }
+}
+
+/* =========================
+HAMBURGER
+========================= */
+.hamburger{
+  display:none;
+  flex-direction:column;
+  gap:5px;
+  background:none;
+  border:none;
+  padding:6px;
+  border-radius:8px;
+  transition:.2s;
+  flex-shrink:0;
+}
+.hamburger span{
+  display:block;
+  width:22px; height:2px;
+  background:var(--black);
+  border-radius:2px;
+  transition:.3s cubic-bezier(.16,1,.3,1);
+  transform-origin:center;
+}
+.hamburger.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2){ opacity:0; transform:scaleX(0); }
+.hamburger.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+body.theme-dark .hamburger span,
+body.theme-glass .hamburger span{ background:var(--black); }
+
+/* =========================
+MOBILE NAV DRAWER
+========================= */
+.mobile-nav{
+  position:fixed;
+  top:0; right:0;
+  width:min(280px, 80vw);
+  height:100%;
+  background:rgba(248,248,247,.97);
+  backdrop-filter:blur(20px);
+  z-index:9000;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  padding:80px 20px 40px;
+  transform:translateX(100%);
+  transition:transform .35s cubic-bezier(.16,1,.3,1);
+  box-shadow:-8px 0 40px rgba(0,0,0,.1);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+body.theme-dark .mobile-nav{
+  background:rgba(13,13,22,.97);
+}
+body.theme-glass .mobile-nav{
+  background:rgba(15,23,42,.97);
+}
+.mobile-nav.open{ transform:translateX(0); }
+.mobile-nav a{
+  display:block;
+  padding:14px 16px;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:500;
+  color:var(--black);
+  text-decoration:none;
+  transition:.2s;
+}
+.mobile-nav a:hover,
+.mobile-nav a:active{ background:rgba(0,0,0,.06); }
+body.theme-dark .mobile-nav a:hover,
+body.theme-glass .mobile-nav a:hover{ background:rgba(255,255,255,.08); }
+
+.mobile-nav-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.4);
+  z-index:8999;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .3s;
+}
+.mobile-nav-overlay.open{ opacity:1; pointer-events:all; }
+
+/* =========================
+TABLET — 1024px
+========================= */
+@media(max-width:1024px){
+  .hero-title{ font-size:clamp(70px,9vw,110px); }
+  .hero-content{ left:32px; bottom:100px; }
+  .ftag[style*="right:38%"]{ display:none; }
+  .movie-grid{ grid-template-columns:repeat(3,1fr); gap:14px; padding:80px 24px 24px; }
+  .about-inner{ gap:28px; padding:80px 24px 24px; }
+  .blog-inner{ gap:16px; padding:80px 24px 24px; }
+  .books-container{ padding:80px 24px 24px; gap:18px; }
+  .contact-inner{ gap:36px; padding:90px 24px 24px; }
+}
+
+/* =========================
+TABLET — 768px
+========================= */
+@media(max-width:768px){
+
+  /* Nav */
+  nav{ padding:14px 20px; }
+  .nav-links{ display:none; }
+  .hamburger{ display:flex; }
+  .theme-btn-label{ display:none; }
+  .theme-btn{ padding:8px 12px; }
+
+  /* Pages — allow scroll on mobile */
+  .page{
+    position:fixed;
+    inset:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* Watermark — scale down */
+  .wm{ font-size:clamp(60px,18vw,110px); right:-10px; }
+
+  /* Hero */
+  .hero-content{ left:20px; right:20px; bottom:80px; }
+  .hero-title{ font-size:clamp(64px,14vw,96px); }
+  .hero-img img{ max-width:100vw; object-position:top center; }
+  .hero-power p{ max-width:100%; }
+  .ftag{ display:none; }
+
+  /* Projects */
+  .movie-grid{
+    grid-template-columns:1fr 1fr;
+    padding:76px 16px 80px;
+    gap:12px;
+  }
+  .movie-card:first-child{ grid-column:span 2; }
+  .movie-card{ min-height:160px; }
+  .movie-card-img{ height:140px; }
+
+  /* About */
+  .about-inner{
+    grid-template-columns:1fr;
+    padding:76px 16px 80px;
+    gap:20px;
+  }
+  .about-img-wrap{ height:38vh; min-height:220px; }
+  .about-stats{ gap:16px; }
+  .stat h3{ font-size:24px; }
+
+  /* Books */
+  .books-container{
+    position:static;
+    grid-template-columns:1fr;
+    padding:76px 16px 80px;
+    gap:16px;
+    height:auto;
+    overflow-y:visible;
+  }
+  .books-library{
+    max-height:50vh;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-right:0;
+  }
+  .pdf-viewer-container{
+    min-height:280px;
+    margin-top:12px;
+  }
+  .book-item{ padding:16px; margin-bottom:0; }
+  .book-item:hover{ transform:none; }
+  .book-card-row{ flex-direction:column; align-items:stretch; }
+  .book-cover-square{
+    min-width:auto; max-width:100%;
+    width:100%; height:180px;
+    margin-top:12px;
+  }
+  .book-cover-square img{ height:100%; }
+
+  /* Research/Blog */
+  .blog-inner{
+    grid-template-columns:1fr;
+    padding:76px 16px 80px;
+    gap:12px;
+  }
+  .blog-card:first-child{ grid-column:span 1; }
+  .blog-card-num{ font-size:32px; }
+
+  /* Contact */
+  .contact-inner{
+    grid-template-columns:1fr;
+    padding:76px 16px 80px;
+    gap:20px;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .contact-left h2{ font-size:clamp(40px,12vw,70px); }
+
+  /* Slide dots */
+  .slide-dots{ right:10px; gap:7px; }
+  .slide-num{ font-size:9px; }
+  .dot{ width:5px; height:5px; }
+
+  /* Scroll hint / char icon */
+  .scroll-hint{ left:16px; font-size:10px; }
+  .char-icon{ right:16px; width:32px; height:32px; font-size:16px; }
+
+  /* Music */
+  #musicOverlay{ right:10px; bottom:10px; }
+  .music-player-panel{
+    width:calc(100vw - 32px);
+    right:16px; left:16px; bottom:16px;
+    border-radius:16px;
+  }
+  .music-widget{ justify-content:flex-end; }
+  .music-player-panel .book-read-btn{ width:100%; }
+
+  /* Progress bar thinner on mobile */
+  #progress-bar{ height:2px; }
+
+  /* Theme dropdown on mobile — attach to left */
+  .theme-dropdown{ right:auto; left:0; }
+}
+
+/* =========================
+PHONE — 480px
+========================= */
+@media(max-width:480px){
+  nav{ padding:12px 16px; }
+  .nav-logo{ width:36px; height:36px; font-size:12px; }
+
+  .hero-title{ font-size:clamp(52px,14vw,80px); }
+  .hero-content{ left:16px; right:16px; bottom:70px; }
+
+  .movie-grid{
+    grid-template-columns:1fr;
+    padding:70px 14px 70px;
+    gap:10px;
+  }
+  .movie-card:first-child{ grid-column:span 1; }
+
+  .about-inner{ padding:70px 14px 70px; }
+  .about-stats{ flex-wrap:wrap; gap:10px; }
+  .stat{ min-width:calc(50% - 5px); }
+
+  .books-container{ padding:70px 14px 70px; }
+  .blog-inner{ padding:70px 14px 70px; }
+  .contact-inner{ padding:70px 14px 70px; }
+
+  .contact-form{ padding:22px 18px; }
+
+  .blog-card{ padding:20px; }
+  .blog-card h3{ font-size:17px; }
+
+  /* Bigger touch targets */
+  .mobile-nav a{ padding:16px; font-size:17px; }
+  .book-read-btn{ min-height:44px; }
+  .form-submit{ min-height:48px; font-size:15px; }
+}
+
+/* =========================
+LANDSCAPE PHONE
+========================= */
+@media(max-height:500px) and (max-width:900px){
+  .hero-title{ font-size:clamp(40px,8vh,72px); }
+  .hero-content{ bottom:40px; }
+  .movie-grid{ padding-top:64px; }
+  .about-inner, .blog-inner, .books-container, .contact-inner{ padding-top:64px; }
+}
+
 </style>
 
 <script>
 function updateProgress(id){
-  const idx = pages.indexOf(id);
-  const pct = pages.length <= 1 ? 100 : (idx/(pages.length-1))*100;
-  document.getElementById('progress-bar').style.width = pct + '%';
+const idx = pages.indexOf(id);
+const pct = pages.length <= 1 ? 100 : (idx/(pages.length-1))*100;
+document.getElementById('progress-bar').style.width = pct + '%';
 }
 
 function sendMsg(){
-  const n = document.getElementById('cName').value.trim();
-  const e = document.getElementById('cEmail').value.trim();
-  const m = document.getElementById('cMsg').value.trim();
-  if(!n || !e || !m){ return; }
-  document.getElementById('sentMsg').style.display='block';
-  document.querySelector('.form-submit').style.display='none';
+const n = document.getElementById('cName').value.trim();
+const e = document.getElementById('cEmail').value.trim();
+const m = document.getElementById('cMsg').value.trim();
+if(!n || !e || !m){ return; }
+document.getElementById('sentMsg').style.display='block';
+document.querySelector('.form-submit').style.display='none';
 }
 </script>
 
+</head>
 <body>
 
 <div id="cur-outer"></div>
@@ -1708,19 +1869,19 @@ NAV
   <div class="nav-left">
     <div class="nav-logo">RB</div>
     <div class="nav-links" id="navLinks">
-      <a onclick="goTo('home')" class="active">Home</a>
-      <a onclick="goTo('movie')">Projects</a>
-      <a onclick="goTo('about')">About</a>
-      <a onclick="goTo('books')">Books</a>
-      <a onclick="goTo('blog')">Research</a>
-      <a onclick="goTo('contact')">Contact</a>
+      <a onclick="goTo('home');closeMobileNav()" class="active">Home</a>
+      <a onclick="goTo('movie');closeMobileNav()">Projects</a>
+      <a onclick="goTo('about');closeMobileNav()">About</a>
+      <a onclick="goTo('books');closeMobileNav()">Books</a>
+      <a onclick="goTo('blog');closeMobileNav()">Research</a>
+      <a onclick="goTo('contact');closeMobileNav()">Contact</a>
     </div>
   </div>
 
-  <div class="nav-right" style="display:flex; align-items:center; gap:20px;">
+  <div style="display:flex;align-items:center;gap:10px;">
     <div class="theme-selector" id="themeSelector">
       <button class="theme-btn" id="themeBtn">
-        <span id="themeBtnIcon">☀️</span> Theme
+        <span id="themeBtnIcon">☀️</span> <span class="theme-btn-label">Theme</span>
       </button>
       <div class="theme-dropdown" id="themeDropdown">
         <button class="theme-option active" data-theme="light" onclick="setTheme('light')">
@@ -1734,15 +1895,23 @@ NAV
         </button>
       </div>
     </div>
-
-    <button class="menu-toggle" id="menuToggle" aria-label="Toggle Navigation" onclick="toggleMenu(event)">
-      <span class="bar"></span>
-      <span class="bar"></span>
-      <span class="bar"></span>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
     </button>
   </div>
 
 </nav>
+
+<!-- Mobile Nav Drawer -->
+<div class="mobile-nav" id="mobileNav">
+  <a onclick="goTo('home');closeMobileNav()">Home</a>
+  <a onclick="goTo('movie');closeMobileNav()">Projects</a>
+  <a onclick="goTo('about');closeMobileNav()">About</a>
+  <a onclick="goTo('books');closeMobileNav()">Books</a>
+  <a onclick="goTo('blog');closeMobileNav()">Research</a>
+  <a onclick="goTo('contact');closeMobileNav()">Contact</a>
+</div>
+<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileNav()"></div>
 
 <!-- =========================
 HOME
@@ -2125,17 +2294,38 @@ WRITER
 <!-- PDF Viewer -->
 <div class="pdf-viewer-container">
 
+<div class="pdf-viewer-toolbar">
+  <div style="display:flex;align-items:center;">
+    <div class="pdf-tb-dots">
+      <div class="pdf-tb-dot r"></div>
+      <div class="pdf-tb-dot y"></div>
+      <div class="pdf-tb-dot g"></div>
+    </div>
+    <span class="pdf-tb-name" id="viewerText">Select a book to read</span>
+  </div>
+  <div class="pdf-tb-actions" id="pdfToolbarActions" style="display:none;">
+    <a id="pdfOpenBtn" href="#" target="_blank" class="pdf-tb-btn primary">↗ Open</a>
+    <a id="pdfDlBtn" href="#" download class="pdf-tb-btn ghost">↓ Save</a>
+  </div>
+</div>
+
 <div class="pdf-viewer-empty" id="viewerEmpty">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
 <polyline points="14 2 14 8 20 8"></polyline>
 <line x1="12" y1="11" x2="12" y2="17"></line>
 <line x1="9" y1="14" x2="15" y2="14"></line>
 </svg>
-<p id="viewerText">Select a book to read</p>
+<p>Click a book on the left to preview it here</p>
+<span>Supports PDF files</span>
 </div>
 
-<iframe id="pdfViewer" class="pdf-viewer-frame" style="display:none;"></iframe>
+<iframe id="pdfViewer" class="pdf-viewer-frame"></iframe>
+
+<div class="pdf-book-info" id="pdfBookInfo">
+  <div class="pdf-book-dot"></div>
+  <span id="pdfBookTitle">—</span>
+</div>
 
 </div>
 
@@ -2404,27 +2594,9 @@ const pages=['home','movie','about','books','blog','contact'];
 
 let current='home';
 
-function toggleMenu(e) {
-  e.stopPropagation();
-  const menuToggle = document.getElementById('menuToggle');
-  const navLinks = document.getElementById('navLinks');
-  if (menuToggle && navLinks) {
-    menuToggle.classList.toggle('open');
-    navLinks.classList.toggle('open');
-  }
-}
-
 function goTo(id){
 
 if(id===current) return;
-
-// Close mobile menu if open
-const menuToggle = document.getElementById('menuToggle');
-const navLinksContainer = document.getElementById('navLinks');
-if (menuToggle && navLinksContainer) {
-  menuToggle.classList.remove('open');
-  navLinksContainer.classList.remove('open');
-}
 
 const fromPage = document.getElementById(current);
 const toPage = document.getElementById(id);
@@ -2454,6 +2626,14 @@ gsap.to(fromPage, {
     current = id;
     updateProgress(id);
     triggerPageAnimations(id);
+
+    /* update active nav link */
+    document.querySelectorAll('.nav-links a, .mobile-nav a').forEach(a=>{
+      a.classList.remove('active');
+    });
+    document.querySelectorAll(`.nav-links a[onclick*="'${id}'"], .mobile-nav a[onclick*="'${id}'"]`).forEach(a=>{
+      a.classList.add('active');
+    });
   }
 });
 
@@ -2522,72 +2702,33 @@ wheelLock=false;
 });
 
 /* =========================
-TOUCH SWIPE NAV
-========================= */
-let touchStartY = 0;
-let touchStartX = 0;
-
-document.addEventListener('touchstart', e => {
-  touchStartY = e.touches[0].clientY;
-  touchStartX = e.touches[0].clientX;
-}, {passive: true});
-
-document.addEventListener('touchend', e => {
-  const touchEndY = e.changedTouches[0].clientY;
-  const touchEndX = e.changedTouches[0].clientX;
-  const diffY = touchStartY - touchEndY;
-  const diffX = touchStartX - touchEndX;
-
-  // Avoid switching pages if user is scrolling inside panels
-  const isScrollable = e.target.closest('.books-container, .movie-grid, .about-inner, .blog-inner, .contact-inner, .music-player-panel');
-  if (isScrollable) {
-    const scrollEl = e.target.closest('.books-container, .movie-grid, .about-inner, .blog-inner, .contact-inner');
-    if (scrollEl) {
-      const isAtTop = scrollEl.scrollTop <= 5;
-      const isAtBottom = scrollEl.scrollHeight - scrollEl.clientHeight - scrollEl.scrollTop <= 5;
-      
-      if (diffY > 80 && !isAtBottom) return;
-      if (diffY < -80 && !isAtTop) return;
-    } else {
-      return;
-    }
-  }
-
-  if (Math.abs(diffY) > 60 && Math.abs(diffY) > Math.abs(diffX)) {
-    const idx = pages.indexOf(current);
-    if (diffY > 0 && idx < pages.length - 1) {
-      goTo(pages[idx + 1]);
-    } else if (diffY < 0 && idx > 0) {
-      goTo(pages[idx - 1]);
-    }
-  }
-}, {passive: true});
-
-/* =========================
 BOOK LIBRARY FUNCTION
 ========================= */
 
 function openBook(pdfFile, title, author){
+const viewer  = document.getElementById('pdfViewer');
+const empty   = document.getElementById('viewerEmpty');
+const nameEl  = document.getElementById('viewerText');
+const actions = document.getElementById('pdfToolbarActions');
+const openBtn = document.getElementById('pdfOpenBtn');
+const dlBtn   = document.getElementById('pdfDlBtn');
+const bookInfo= document.getElementById('pdfBookInfo');
+const bookTtl = document.getElementById('pdfBookTitle');
 
-const viewer = document.getElementById('pdfViewer');
-const empty = document.getElementById('viewerEmpty');
-const text = document.getElementById('viewerText');
+// Update toolbar
+nameEl.textContent = title + '.pdf';
+openBtn.href = pdfFile;
+dlBtn.href   = pdfFile;
+actions.style.display = 'flex';
 
-// Update viewer
+// Show iframe
 viewer.src = pdfFile;
 viewer.style.display = 'block';
-empty.style.display = 'none';
+empty.style.display  = 'none';
 
-// Update title
-text.textContent = title + ' by ' + author;
-
-// Auto scroll to PDF reader on mobile
-if (window.innerWidth <= 768) {
-  setTimeout(() => {
-    document.querySelector('.pdf-viewer-container').scrollIntoView({ behavior: 'smooth' });
-  }, 100);
-}
-
+// Footer info
+bookInfo.classList.add('show');
+bookTtl.textContent = title + ' — ' + author;
 }
 
 /* =========================
@@ -2651,9 +2792,58 @@ setTimeout(type,deleting ? 50 : 90);
 type();
 
 /* =========================
-CUSTOM CURSOR
+MOBILE NAV
 ========================= */
 
+function toggleMobileNav(){
+  const nav     = document.getElementById('mobileNav');
+  const overlay = document.getElementById('mobileNavOverlay');
+  const burger  = document.getElementById('hamburger');
+  nav.classList.toggle('open');
+  overlay.classList.toggle('open');
+  burger.classList.toggle('open');
+  document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
+}
+
+function closeMobileNav(){
+  const nav     = document.getElementById('mobileNav');
+  const overlay = document.getElementById('mobileNavOverlay');
+  const burger  = document.getElementById('hamburger');
+  nav.classList.remove('open');
+  overlay.classList.remove('open');
+  burger.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* close on ESC */
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeMobileNav(); });
+
+/* =========================
+TOUCH SWIPE NAVIGATION
+========================= */
+(function(){
+  let startX=0, startY=0;
+  document.addEventListener('touchstart', e=>{
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive:true });
+
+  document.addEventListener('touchend', e=>{
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    /* only horizontal swipes wider than 60px and not too vertical */
+    if(Math.abs(dx) < 60 || Math.abs(dy) > 60) return;
+    const idx = pages.indexOf(current);
+    if(dx < 0 && idx < pages.length-1) goTo(pages[idx+1]);   // swipe left → next
+    if(dx > 0 && idx > 0)              goTo(pages[idx-1]);   // swipe right → prev
+  }, { passive:true });
+})();
+
+/* =========================
+CUSTOM CURSOR — DESKTOP ONLY
+========================= */
+
+if(window.matchMedia('(hover:hover)').matches){
 const curOuter = document.getElementById('cur-outer');
 const curDot   = document.getElementById('cur-dot');
 let mouseX=0, mouseY=0;
@@ -2670,6 +2860,13 @@ document.querySelectorAll('a,button,[onclick],.movie-card,.blog-card,.book-item,
   el.addEventListener('mouseenter',()=>curOuter.classList.add('hover'));
   el.addEventListener('mouseleave',()=>curOuter.classList.remove('hover'));
 });
+} else {
+  /* touch device — hide cursor elements */
+  const co = document.getElementById('cur-outer');
+  const cd = document.getElementById('cur-dot');
+  if(co) co.style.display='none';
+  if(cd) cd.style.display='none';
+}
 
 /* =========================
 THEME SYSTEM
@@ -2687,15 +2884,7 @@ themeBtn.addEventListener('click', (e)=>{
   themeDropdown.classList.toggle('open');
 });
 
-document.addEventListener('click', ()=>{
-  themeDropdown.classList.remove('open');
-  const menuToggle = document.getElementById('menuToggle');
-  const navLinks = document.getElementById('navLinks');
-  if (menuToggle && navLinks) {
-    menuToggle.classList.remove('open');
-    navLinks.classList.remove('open');
-  }
-});
+document.addEventListener('click', ()=>{ themeDropdown.classList.remove('open'); });
 
 function setTheme(t){
   document.body.classList.remove('theme-light','theme-dark','theme-glass');
@@ -2848,28 +3037,10 @@ const uploadBookInput = document.getElementById('uploadBookInput');
 
 function fmt(t){ if(isNaN(t)) return '0:00'; const m=Math.floor(t/60); const s=Math.floor(t%60).toString().padStart(2,'0'); return `${m}:${s}`; }
 
-// hover/click expand
+// hover expand
 const widget = document.getElementById('musicOverlay');
-
-miniEl.addEventListener('click', (e)=>{
-  e.stopPropagation();
-  panel.classList.toggle('show');
-});
-
-panel.addEventListener('click', (e)=>{
-  e.stopPropagation();
-});
-
-widget.addEventListener('mouseenter', ()=>{ 
-  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    panel.classList.add('show'); 
-  }
-});
-widget.addEventListener('mouseleave', ()=>{ 
-  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    panel.classList.remove('show'); 
-  }
-});
+widget.addEventListener('mouseenter', ()=>{ panel.classList.add('show'); });
+widget.addEventListener('mouseleave', ()=>{ panel.classList.remove('show'); });
 
 // play/pause
 playBtnEl.addEventListener('click', ()=>{
